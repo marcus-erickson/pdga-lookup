@@ -11,6 +11,12 @@
   }
 }
 
+/* Loading spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 /* Container styles */
 .container {
   max-width: 600px;
@@ -53,6 +59,26 @@
 .form-group input:focus {
   outline: none;
   border-color: #4a7c59;
+}
+
+/* Checkbox styles */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.checkbox-group label {
+  margin-bottom: 0;
+  cursor: pointer;
+  font-weight: normal;
+  color: #666;
 }
 
 /* Button styles */

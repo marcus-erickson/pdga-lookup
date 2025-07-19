@@ -5,16 +5,23 @@ const LoginForm = ({ onLogin, isLoading }) => {
     username: '',
     password: '',
   });
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
 
   // Load saved username on component mount
   useEffect(() => {
     const savedUsername = localStorage.getItem('pdga_last_username');
+    const savedRememberMe = localStorage.getItem('pdga_remember_me') === 'true';
+    
     if (savedUsername) {
       setCredentials(prev => ({
         ...prev,
         username: savedUsername
       }));
+    }
+    
+    if (savedRememberMe) {
+      setRememberMe(true);
     }
   }, []);
 
@@ -42,7 +49,7 @@ const LoginForm = ({ onLogin, isLoading }) => {
         localStorage.setItem('pdga_last_username', credentials.username.trim());
       }
       
-      await onLogin(credentials.username, credentials.password);
+      await onLogin(credentials.username, credentials.password, rememberMe);
     } catch (err) {
       setError(err.message);
     }
@@ -129,6 +136,19 @@ const LoginForm = ({ onLogin, isLoading }) => {
             autoComplete="current-password"
           />
         </div>
+
+        <div className="checkbox-group">
+          <input
+            type="checkbox"
+            id="rememberMe"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            disabled={isLoading}
+          />
+          <label htmlFor="rememberMe">
+            Remember me (stay logged in)
+          </label>
+        </div>
         
         <button 
           type="submit" 
@@ -144,6 +164,11 @@ const LoginForm = ({ onLogin, isLoading }) => {
         {hasSavedUsername && (
           <p style={{ marginTop: '8px', fontSize: '12px', color: '#999' }}>
             Your username will be remembered for next time
+          </p>
+        )}
+        {rememberMe && (
+          <p style={{ marginTop: '8px', fontSize: '12px', color: '#4a7c59' }}>
+            ✓ You'll stay logged in until you logout
           </p>
         )}
       </div>
