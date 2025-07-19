@@ -1,0 +1,12 @@
+.App {
+  text-align: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #4a7c59 0%, #6b8e6b 100%);
+  padding: 20px 0;
+}
+
+@media (max-width: 480px) {
+  .App {
+    padding: 10px 0;
+  }
+} 
