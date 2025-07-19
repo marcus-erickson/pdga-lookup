@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 
-const PlayerSearch = ({ onSearch, onStatistics, onLogout, isLoading }) => {
+const PlayerSearch = ({ onSearch, onLogout, isLoading }) => {
   const [pdgaNumber, setPdgaNumber] = useState('');
   const [playerData, setPlayerData] = useState(null);
-  const [statisticsData, setStatisticsData] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -33,32 +32,8 @@ const PlayerSearch = ({ onSearch, onStatistics, onLogout, isLoading }) => {
   const handleNewSearch = () => {
     setPdgaNumber('');
     setPlayerData(null);
-    setStatisticsData(null);
     setError('');
     setSuccess('');
-  };
-
-  const handleStatistics = async (e) => {
-    e.preventDefault();
-    
-    if (!pdgaNumber.trim()) {
-      setError('Please enter a PDGA number');
-      return;
-    }
-
-    // Clear previous results and errors
-    setStatisticsData(null);
-    setError('');
-    setSuccess('');
-
-    try {
-      const result = await onStatistics(pdgaNumber.trim());
-      console.log('PDGA Statistics Response:', result); // Debug log
-      setStatisticsData(result);
-      setSuccess('Player statistics found successfully!');
-    } catch (err) {
-      setError(err.message);
-    }
   };
 
   const formatPlayerData = (data) => {
@@ -118,72 +93,6 @@ const PlayerSearch = ({ onSearch, onStatistics, onLogout, isLoading }) => {
     return fields.filter(field => field.value !== 'N/A');
   };
 
-  const formatStatisticsData = (data) => {
-    if (!data || !Array.isArray(data)) {
-      console.log('No statistics data found in response:', data);
-      return null;
-    }
-
-    return data.map((yearData, index) => {
-      const { year, data: statsData } = yearData;
-      
-      // Handle rankings data (which is what the API actually returns)
-      if (statsData && statsData.players && Array.isArray(statsData.players)) {
-        const targetPlayer = statsData.players.find(player => 
-          player.pdga_number === pdgaNumber
-        );
-        
-        if (targetPlayer) {
-          const stats = [
-            { label: 'Rating', value: targetPlayer.rating },
-            { label: 'Tournaments', value: targetPlayer.tournaments },
-            { label: 'Rating Rounds Used', value: targetPlayer.rating_rounds_used },
-            { label: 'Points', value: targetPlayer.points },
-            { label: 'Prize Money', value: `$${parseInt(targetPlayer.prize).toLocaleString()}` },
-            { label: 'Division', value: targetPlayer.division_name },
-            { label: 'Class', value: targetPlayer.class === 'P' ? 'Pro' : 'Amateur' },
-            { label: 'Gender', value: targetPlayer.gender },
-            { label: 'Country', value: targetPlayer.country },
-            { label: 'State/Province', value: targetPlayer.state_prov },
-            { label: 'Last Modified', value: targetPlayer.last_modified }
-          ].filter(stat => stat.value && stat.value !== 'N/A');
-
-          return {
-            year,
-            stats,
-            message: null
-          };
-        } else {
-          return {
-            year,
-            stats: [],
-            message: `Player not found in ${year} rankings`
-          };
-        }
-      }
-      
-      // Handle traditional statistics data (if it exists)
-      if (statsData && statsData.statistics && Array.isArray(statsData.statistics)) {
-        const stats = statsData.statistics.map(stat => ({
-          label: stat.stat_name || 'Unknown Stat',
-          value: stat.stat_value || 'N/A'
-        })).filter(stat => stat.value !== 'N/A');
-
-        return {
-          year,
-          stats,
-          message: stats.length === 0 ? 'No statistics available for this year' : null
-        };
-      }
-
-      return {
-        year,
-        stats: [],
-        message: 'No data available for this year'
-      };
-    });
-  };
-
   return (
     <div>
       <div className="card">
@@ -214,24 +123,14 @@ const PlayerSearch = ({ onSearch, onStatistics, onLogout, isLoading }) => {
             />
           </div>
           
-          <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+          <div style={{ marginTop: '16px' }}>
             <button 
               type="submit" 
               className="btn" 
               disabled={isLoading}
-              style={{ flex: 1 }}
+              style={{ width: '100%' }}
             >
               {isLoading ? 'Searching...' : 'Search Player'}
-            </button>
-            
-            <button 
-              type="button" 
-              className="btn btn-secondary" 
-              onClick={handleStatistics}
-              disabled={isLoading}
-              style={{ flex: 1 }}
-            >
-              {isLoading ? 'Loading...' : 'Get Statistics'}
             </button>
           </div>
         </form>
@@ -252,37 +151,6 @@ const PlayerSearch = ({ onSearch, onStatistics, onLogout, isLoading }) => {
                 <span className="label">{item.label}:</span>
                 <span className="value">{item.value}</span>
               </p>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {statisticsData && (
-        <div className="card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h3 style={{ color: '#4a7c59', margin: 0 }}>Player Statistics</h3>
-            <button onClick={handleNewSearch} className="btn btn-secondary" style={{ width: 'auto', padding: '8px 16px' }}>
-              New Search
-            </button>
-          </div>
-          
-          <div className="player-info">
-            {formatStatisticsData(statisticsData)?.map((yearData, yearIndex) => (
-              <div key={yearIndex} style={{ marginBottom: '24px' }}>
-                <h4 style={{ color: '#6b8e6b', marginBottom: '12px', borderBottom: '1px solid #e8f0e8', paddingBottom: '8px' }}>
-                  {yearData.year}
-                </h4>
-                {yearData.message ? (
-                  <p style={{ color: '#8ba892', fontStyle: 'italic' }}>{yearData.message}</p>
-                ) : (
-                  yearData.stats.map((stat, statIndex) => (
-                    <p key={statIndex}>
-                      <span className="label">{stat.label}:</span>
-                      <span className="value">{stat.value}</span>
-                    </p>
-                  ))
-                )}
-              </div>
             ))}
           </div>
         </div>

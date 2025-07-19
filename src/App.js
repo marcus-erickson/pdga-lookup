@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import LoginForm from './components/LoginForm';
 import PlayerSearch from './components/PlayerSearch';
-import { authenticate, searchPlayer, getPlayerStatistics, setAuthToken } from './services/pdgaApi';
+import { authenticate, searchPlayer, setAuthToken } from './services/pdgaApi';
 import './App.css';
 
 function App() {
@@ -62,22 +62,6 @@ function App() {
     }
   };
 
-  const handlePlayerStatistics = async (pdgaNumber) => {
-    setIsLoading(true);
-    try {
-      const result = await getPlayerStatistics(pdgaNumber);
-      return result;
-    } catch (error) {
-      // If authentication expired, logout user
-      if (error.message.includes('Authentication expired')) {
-        handleLogout();
-      }
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <div className="App">
       <div className="container">
@@ -86,7 +70,6 @@ function App() {
         ) : (
           <PlayerSearch 
             onSearch={handlePlayerSearch} 
-            onStatistics={handlePlayerStatistics}
             onLogout={handleLogout} 
             isLoading={isLoading} 
           />
