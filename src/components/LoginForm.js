@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const LoginForm = ({ onLogin, isLoading }) => {
   const [credentials, setCredentials] = useState({
@@ -6,6 +6,17 @@ const LoginForm = ({ onLogin, isLoading }) => {
     password: '',
   });
   const [error, setError] = useState('');
+
+  // Load saved username on component mount
+  useEffect(() => {
+    const savedUsername = localStorage.getItem('pdga_last_username');
+    if (savedUsername) {
+      setCredentials(prev => ({
+        ...prev,
+        username: savedUsername
+      }));
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,11 +37,26 @@ const LoginForm = ({ onLogin, isLoading }) => {
     }
 
     try {
+      // Save username to localStorage before attempting login
+      if (credentials.username.trim()) {
+        localStorage.setItem('pdga_last_username', credentials.username.trim());
+      }
+      
       await onLogin(credentials.username, credentials.password);
     } catch (err) {
       setError(err.message);
     }
   };
+
+  const handleClearSavedUsername = () => {
+    localStorage.removeItem('pdga_last_username');
+    setCredentials(prev => ({
+      ...prev,
+      username: ''
+    }));
+  };
+
+  const hasSavedUsername = localStorage.getItem('pdga_last_username');
 
   return (
     <div className="card">
@@ -46,16 +72,48 @@ const LoginForm = ({ onLogin, isLoading }) => {
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="username">PDGA Username</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            value={credentials.username}
-            onChange={handleChange}
-            placeholder="Enter your PDGA username"
-            disabled={isLoading}
-            autoComplete="username"
-          />
+          <div style={{ position: 'relative' }}>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={credentials.username}
+              onChange={handleChange}
+              placeholder="Enter your PDGA username"
+              disabled={isLoading}
+              autoComplete="username"
+            />
+            {hasSavedUsername && (
+              <button
+                type="button"
+                onClick={handleClearSavedUsername}
+                style={{
+                  position: 'absolute',
+                  right: '8px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  color: '#999',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  padding: '4px 8px',
+                  borderRadius: '4px',
+                  transition: 'color 0.2s'
+                }}
+                onMouseEnter={(e) => e.target.style.color = '#666'}
+                onMouseLeave={(e) => e.target.style.color = '#999'}
+                title="Clear saved username"
+              >
+                ×
+              </button>
+            )}
+          </div>
+          {hasSavedUsername && (
+            <small style={{ color: '#4a7c59', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+              ✓ Using saved username
+            </small>
+          )}
         </div>
         
         <div className="form-group">
@@ -83,6 +141,11 @@ const LoginForm = ({ onLogin, isLoading }) => {
       
       <div style={{ marginTop: '20px', textAlign: 'center', fontSize: '14px', color: '#666' }}>
         <p>Use your PDGA account credentials to access player information.</p>
+        {hasSavedUsername && (
+          <p style={{ marginTop: '8px', fontSize: '12px', color: '#999' }}>
+            Your username will be remembered for next time
+          </p>
+        )}
       </div>
     </div>
   );
