@@ -7,7 +7,6 @@ import './App.css';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [authToken, setAuthTokenState] = useState(null);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
 
   // Check for stored session on app load
@@ -22,7 +21,6 @@ function App() {
         try {
           // Set the stored token for API calls
           setAuthToken(storedToken);
-          setAuthTokenState(storedToken);
           
           // Test the session by making a simple API call
           // We'll use a test search to validate the session
@@ -53,7 +51,6 @@ function App() {
       localStorage.setItem('pdga_session_name', authData.session_name);
       localStorage.setItem('pdga_remember_me', rememberMe.toString());
       
-      setAuthTokenState(authData.token);
       setIsAuthenticated(true);
     } catch (error) {
       throw error;
@@ -70,7 +67,6 @@ function App() {
     localStorage.removeItem('pdga_remember_me');
     
     setAuthToken(null);
-    setAuthTokenState(null);
     setIsAuthenticated(false);
   };
 
