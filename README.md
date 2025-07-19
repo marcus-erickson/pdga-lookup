@@ -1,83 +1,149 @@
-# PDGA Player Lookup
+# PDGA Lookup App
 
-A mobile-friendly React application for tournament directors to quickly lookup PDGA player information using the official PDGA API.
+A React-based web application for tournament directors to quickly lookup PDGA player information using the PDGA REST API.
 
 ## Features
 
-- **Secure Authentication**: Login with PDGA credentials using the official API
-- **Player Search**: Search players by PDGA number
-- **Mobile-Optimized**: Responsive design perfect for tournament use
-- **Persistent Login**: Token-based authentication with local storage
-- **Real-time Data**: Direct integration with PDGA's REST API
+- 🔐 **PDGA Authentication**: Secure login with PDGA credentials
+- 🔍 **Player Lookup**: Search players by PDGA number
+- 📱 **Mobile-Friendly**: Responsive design optimized for mobile devices
+- 🎨 **Natural Green Theme**: Beautiful UI with PDGA-inspired colors
+- 📋 **Formatted Display**: Clean presentation of player information
+- 📱 **QR Code Sharing**: Easy sharing via QR code for mobile access
+- ☁️ **Netlify Deployment**: Serverless functions for production
 
-## Prerequisites
+## Tech Stack
 
-- Node.js (version 14 or higher)
+- **Frontend**: React 18, CSS3
+- **Backend**: Netlify Functions (production), Express.js (development)
+- **API**: PDGA REST API
+- **Deployment**: Netlify
+- **QR Code**: react-qr-code
+
+## Local Development
+
+### Prerequisites
+
+- Node.js 18+ 
 - npm or yarn
-- PDGA account credentials
 
-## Installation
+### Setup
 
-1. Clone or download this repository
-2. Navigate to the project directory:
-   ```bash
-   cd pdga-lookup
-   ```
+1. Clone the repository:
+```bash
+git clone <your-repo-url>
+cd pdga-lookup
+```
 
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
+2. Install dependencies:
+```bash
+npm install
+```
 
-## Usage
+3. Start the development server:
+```bash
+npm run dev
+```
 
-1. Start the development server:
-   ```bash
-   npm start
-   ```
+This will start both the React frontend (port 3000) and Express backend (port 3001).
 
-2. Open your browser and navigate to `http://localhost:3000`
+### Development vs Production
 
-3. Login with your PDGA credentials
+- **Development**: Uses local Express server at `http://localhost:3001/api`
+- **Production**: Uses Netlify Functions at `/.netlify/functions`
 
-4. Enter a PDGA number to search for player information
+## Deployment to Netlify
 
-## API Integration
+### Automatic Deployment
 
-This app integrates with the PDGA REST API:
+1. Connect your GitHub repository to Netlify
+2. Set build settings:
+   - **Build command**: `npm run build`
+   - **Publish directory**: `build`
+   - **Functions directory**: `netlify/functions`
 
-- **Authentication**: `POST /auth` - Login with PDGA credentials
-- **Player Search**: `GET /services/player-search` - Search by PDGA number
+### Manual Deployment
 
-For more information about the PDGA API, visit: https://www.pdga.com/dev/api/rest/v1
-
-## Mobile Usage
-
-The app is optimized for mobile devices and can be used by tournament directors to quickly verify player information when someone walks up to a tournament. The responsive design ensures it works well on phones and tablets.
-
-## Security
-
-- Credentials are only used for authentication and are not stored
-- Authentication tokens are stored securely in localStorage
-- All API communication uses HTTPS
-- Tokens are automatically cleared on logout
-
-## Building for Production
-
-To create a production build:
-
+1. Build the project:
 ```bash
 npm run build
 ```
 
-The build files will be created in the `build` directory and can be deployed to any static hosting service.
+2. Deploy using Netlify CLI:
+```bash
+npx netlify deploy --prod --dir=build
+```
+
+### Environment Variables
+
+No environment variables are required for basic functionality.
+
+## Usage
+
+1. **Login**: Enter your PDGA username and password
+2. **Search**: Enter a PDGA number to lookup player information
+3. **Share**: Use the share button to generate a QR code for mobile access
+4. **View Results**: Player information is displayed in a clean, formatted layout
+
+## API Endpoints
+
+### Netlify Functions (Production)
+
+- `/.netlify/functions/auth` - PDGA authentication
+- `/.netlify/functions/player-search` - Player lookup
+
+### Local Development
+
+- `http://localhost:3001/api/auth` - PDGA authentication
+- `http://localhost:3001/api/player-search` - Player lookup
+
+## File Structure
+
+```
+pdga-lookup/
+├── src/
+│   ├── components/
+│   │   ├── LoginForm.js
+│   │   ├── PlayerSearch.js
+│   │   └── QRCodeModal.js
+│   ├── services/
+│   │   └── pdgaApi.js
+│   ├── App.js
+│   └── App.css
+├── netlify/
+│   └── functions/
+│       ├── auth.js
+│       ├── player-search.js
+│       └── package.json
+├── server.js (development only)
+├── netlify.toml
+└── package.json
+```
 
 ## Troubleshooting
 
-- **Authentication Issues**: Ensure your PDGA credentials are correct
-- **Network Errors**: Check your internet connection
-- **API Errors**: The PDGA API may be temporarily unavailable
+### Network Errors on Mobile
+
+If you're getting network errors on mobile after deployment:
+
+1. Ensure Netlify Functions are properly deployed
+2. Check that the `netlify.toml` file is in the root directory
+3. Verify the functions directory structure is correct
+
+### Authentication Issues
+
+- Ensure PDGA credentials are correct
+- Check that the PDGA API is accessible
+- Verify session tokens are being stored properly
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test locally and on Netlify
+5. Submit a pull request
 
 ## License
 
-This project is for educational and tournament management purposes. Please respect PDGA's API terms of service. 
+This project is for tournament director use with PDGA API access. 

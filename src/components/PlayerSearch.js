@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import QRCodeModal from './QRCodeModal';
 
 const PlayerSearch = ({ onSearch, onLogout, isLoading }) => {
   const [pdgaNumber, setPdgaNumber] = useState('');
   const [playerData, setPlayerData] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [showQRModal, setShowQRModal] = useState(false);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -98,9 +100,18 @@ const PlayerSearch = ({ onSearch, onLogout, isLoading }) => {
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h2 style={{ color: '#333', margin: 0 }}>Player Lookup</h2>
-          <button onClick={onLogout} className="btn btn-secondary" style={{ width: 'auto', padding: '8px 16px' }}>
-            Logout
-          </button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button 
+              onClick={() => setShowQRModal(true)} 
+              className="btn btn-secondary" 
+              style={{ width: 'auto', padding: '8px 16px' }}
+            >
+              Share
+            </button>
+            <button onClick={onLogout} className="btn btn-secondary" style={{ width: 'auto', padding: '8px 16px' }}>
+              Logout
+            </button>
+          </div>
         </div>
         
         {error && <div className="error">{error}</div>}
@@ -155,6 +166,11 @@ const PlayerSearch = ({ onSearch, onLogout, isLoading }) => {
           </div>
         </div>
       )}
+
+      <QRCodeModal 
+        isOpen={showQRModal} 
+        onClose={() => setShowQRModal(false)} 
+      />
     </div>
   );
 };

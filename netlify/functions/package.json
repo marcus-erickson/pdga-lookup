@@ -1,0 +1,8 @@
+{
+  "name": "pdga-lookup-functions",
+  "version": "1.0.0",
+  "description": "Netlify Functions for PDGA Lookup",
+  "dependencies": {
+    "axios": "^1.4.0"
+  }
+} 

@@ -1,10 +1,14 @@
 import axios from 'axios';
 
-const PDGA_API_BASE = 'http://localhost:3001/api';
+// Use Netlify Functions in production, local backend in development
+const isDevelopment = process.env.NODE_ENV === 'development';
+const API_BASE = isDevelopment 
+  ? 'http://localhost:3001/api' 
+  : '/.netlify/functions';
 
 // Create axios instance with base configuration
 const pdgaApi = axios.create({
-  baseURL: PDGA_API_BASE,
+  baseURL: API_BASE,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -13,7 +17,8 @@ const pdgaApi = axios.create({
 // Authentication function
 export const authenticate = async (username, password) => {
   try {
-    const response = await pdgaApi.post('/auth', {
+    const endpoint = isDevelopment ? '/auth' : '/auth';
+    const response = await pdgaApi.post(endpoint, {
       username,
       password,
     });
@@ -52,7 +57,9 @@ export const searchPlayer = async (pdgaNumber) => {
     // Retrieve session info from localStorage
     const sessid = localStorage.getItem('pdga_sessid');
     const session_name = localStorage.getItem('pdga_session_name');
-    const response = await pdgaApi.post('/player-search', {
+    const endpoint = isDevelopment ? '/player-search' : '/player-search';
+    
+    const response = await pdgaApi.post(endpoint, {
       pdga_number: pdgaNumber,
       sessid,
       session_name,
@@ -94,7 +101,8 @@ export const getPlayerStatistics = async (pdgaNumber) => {
     // Fetch statistics for all three years
     const statsPromises = years.map(year => {
       console.log(`Frontend - Making request for year ${year}`);
-      return pdgaApi.get('/player-statistics', {
+      const endpoint = isDevelopment ? '/player-statistics' : '/player-statistics';
+      return pdgaApi.get(endpoint, {
         params: {
           pdga_number: pdgaNumber,
           year: year,
